@@ -9,7 +9,7 @@ int AgainstBot = 0;                //ako je ukljucen vsBot mode -> AgainstBot = 
 int rb = 0;                        //pamti korisnikov izbor kod biranja boja buttona
 int numberOfMoves = 0;   //broj poteza
 
-int bbn = 0;
+int bbn = 0;          //big board number
 int numofmoves = 0;
 
 bigBoard matrix;
@@ -26,6 +26,7 @@ int num = 1;                        // prilikom biranja boja buttona, pamti mije
 
 QString text1 = "background-color: rgb(255, 155, 0); color: rgb(255, 255, 255)";      //narancasta boja za 'X' igraca
 QString text2 = "background-color: rgb(0, 140, 0); color: rgb(255, 255, 255)";        //zelena boja za 'O' igraca
+QString text3 = "background-color: rgb(255, 255, 255); color: rgb(255, 255, 255)";        //tie boja za ultimate TTT
 
 //CLASS FUNCTIONS
 
@@ -272,11 +273,7 @@ bool board5x5::operator==(board5x5 temp)
 //-------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
+//Ultimate TTT
 
 smallBoard::smallBoard()
 {
@@ -370,17 +367,21 @@ char bigBoard::GameEnd()
 
     int signal = 0;
 
-    for (int i = 0; i < 3; i++)
-    {
-        if (boards[i].flag == boards[i + 1].flag && boards[i].flag == boards[i + 2].flag && boards[i].flag != '0')
-            return boards[i].flag;
-    }
 
-    for (int i = 0; i < 3; i++)
-    {
-        if (boards[i].flag == boards[i + 3].flag && boards[i].flag == boards[i + 6].flag && boards[i].flag != '0')
-            return boards[i].flag;
-    }
+    if (boards[0].flag == boards[1].flag && boards[0].flag == boards[2].flag && boards[0].flag != '0')
+        return boards[0].flag;
+    if (boards[3].flag == boards[4].flag && boards[3].flag == boards[5].flag && boards[3].flag != '0')
+        return boards[3].flag;
+    if (boards[6].flag == boards[7].flag && boards[6].flag == boards[8].flag && boards[6].flag != '0')
+        return boards[6].flag;
+
+
+    if (boards[0].flag == boards[3].flag && boards[0].flag == boards[6].flag && boards[0].flag != '0')
+        return boards[0].flag;
+    if (boards[1].flag == boards[4].flag && boards[1].flag == boards[7].flag && boards[1].flag != '0')
+        return boards[1].flag;
+    if (boards[2].flag == boards[5].flag && boards[2].flag == boards[8].flag && boards[2].flag != '0')
+        return boards[2].flag;
 
     if (boards[0].flag == boards[4].flag and boards[0].flag == boards[8].flag and boards[0].flag != '0')
     {
@@ -402,14 +403,29 @@ char bigBoard::GameEnd()
 }
 
 
+void UltimateTTT::re()
+{
+    ResetGameU();
+    reject();
+}
+
 //Prozor za igru Ultimate TTT
 UltimateTTT::UltimateTTT()
 {
     setWindowTitle("Ultimate Tic Tac Toe");
+
+    QLabel* NextMove = new QLabel(this);
+    NextMove->setText("Next move(index of small matrix in big matrix): ");
+    NextMove->move(90, 55);
+
+    next = new QLabel(this);
+    next->setText("any");
+    next->move(420, 55);
+
     MyLabel = new QLabel(this);
-    MyLabel->setText("Ultimate Tic Tac Toe:\nTo read info click 'info' button");
+    MyLabel->setText("ULTIMATE TIC TAC TOE:\nTo read info click 'info' button");
     MyLabel->move(90,15);
-    setStyleSheet("background-color: rgb(255, 223, 128)");
+    setStyleSheet("background-color: rgb(255, 255, 204)");
 
     QPushButton* oo = new QPushButton(this);
 
@@ -418,9 +434,16 @@ UltimateTTT::UltimateTTT()
     oo->setStyleSheet("background-color: light gray");
     connect(oo, &QPushButton::clicked, this, &mfun);
 
+    QPushButton* exit = new QPushButton(this);
+
+    exit->setText("Exit");
+    exit->setGeometry(600, 550, 100, 40);
+    exit->setStyleSheet("background-color: light gray");
+    connect(exit, &QPushButton::clicked, this, &UltimateTTT::re);
+
     int x = 50, y = 50;
     int incrementx = 0;
-    int incrementy = 0;
+    int incrementy = 30;
 
     for(int a = 0; a < 3; a++)
     {
@@ -566,7 +589,7 @@ void mfun()
 void StartUltimateGame()
 {
     UltimateTTT WindowU;
-    WindowU.resize(700,600);
+    WindowU.resize(750,600);
     WindowU.show();
     WindowU.exec();
 
@@ -630,7 +653,7 @@ void UltimateTTT::handleButton(int i)
        }
      CheckIfEndUltimate();
 
-    if(matrix.boards[bbn].flag != '0')
+    while(matrix.boards[bbn].flag != '0')
     {
         if(bbn!=8)
         bbn = bbn + 1;
@@ -639,6 +662,7 @@ void UltimateTTT::handleButton(int i)
     }
 
 
+    next->setText(QString::number(bbn + 1));
 
 }
 int UltimateTTT::CheckIfEndUltimate()
@@ -651,33 +675,56 @@ int UltimateTTT::CheckIfEndUltimate()
         if(p != '0')
             for(int j = 0; j < 9; j++)
             {
-                MyButton[i * 9 + j]->setText(p);
+                if(p == 'x')
+                {
+                    MyButton[i * 9 + j]->setText(p);
+                    MyButton[i * 9 + j]->setStyleSheet(text1);
+                }
+
+                else if(p == 'o')
+                {
+                    MyButton[i * 9 + j]->setText(p);
+                    MyButton[i * 9 + j]->setStyleSheet(text2);
+                }
+
+                else
+                {
+                    MyButton[i * 9 + j]->setText(p);
+                    MyButton[i * 9 + j]->setStyleSheet(text3);
+                }
             }
     }
 
    char temp = matrix.GameEnd();
 
-/*    for(int i = 0; i < 9 ; i++)
-    {
-        if(matrix.boards[i].flag == 'x')
-            for(int i = 0; i < 81; i++)
-            {
-                MyButton[i]->setText("AA");
-            }
-    }*/
-
     if(temp != '0')
     {
         if(temp == 'x')
         {
+            p1.win1v1 = p1.win1v1 + 1;
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
+            //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
+            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/X.jpg"));
+            //msgBox.setText(text);
+            //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
+            //msgBox.resize(100,100);
+            msgBox.exec();
             for(int i = 0; i < 81; i++)
             {
                 MyButton[i]->setText("X");
             }
         }
 
-        if(temp == 't')
+        else if(temp == 't')
         {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Tie game!");
+            //msgBox.setText("Tie game!");
+            draw = draw + 1;
+            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/tie.jpg"));
+            //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
+            msgBox.exec();
             for(int i = 0; i < 81; i++)
             {
                 MyButton[i]->setText("t");
@@ -686,11 +733,20 @@ int UltimateTTT::CheckIfEndUltimate()
 
         else
         {
+            p2.win1v1 = p2.win1v1 + 1;
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Winner is " + p2.name + '(' + p2.sign + ')');
+            //QString text = "Winner is " + p2.name + '(' + p2.sign + ')';
+            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/O.png"));
+            //msgBox.setText(text);
+            //msgBox.setStyleSheet("QLabel{max-width: 500px;}");
+            msgBox.exec();
             for(int i = 0; i < 81; i++)
             {
                 MyButton[i]->setText("O");
             }
         }
+        ResetGameU();
 
     }
 }
@@ -993,21 +1049,30 @@ MyMainWindow::MyMainWindow()
     connect(five, &QAction::triggered, this, &MyMainWindow::Start5x5Game);
     EditMenu->addAction(five);
 
-    three = new QAction(tr("&3x3 board"), this);
-    three->setShortcut(tr("CTRL+3"));
-    connect(three, &QAction::triggered, this, &MyMainWindow::UpdateAgainstBot);
-    EditMenu->addAction(three);
-
-    vsBot = new QAction(tr("&vsBot"), this);
-    vsBot->setShortcut(tr("CTRL+B"));
-    connect(vsBot, &QAction::triggered, this,&MyMainWindow::VsBot);
-    EditMenu->addAction(vsBot);
 
     //extra mode
     Ultimate = new QAction(tr("Ultimate"), this);
     Ultimate->setShortcut(tr("CTRL+U"));
     connect(Ultimate, &QAction::triggered, this, &StartUltimateGame);
     EditMenu->addAction(Ultimate);
+
+
+    //Bot mode
+
+    EditMenu = menuBar()->addMenu(tr("&vsBot"));
+
+    vsBot = new QAction(tr("&Turn on"), this);
+    vsBot->setShortcut(tr("CTRL+B"));
+    connect(vsBot, &QAction::triggered, this,&MyMainWindow::VsBot);
+    EditMenu->addAction(vsBot);
+
+
+
+    three = new QAction(tr("&Turn off"), this);
+    three->setShortcut(tr("CTRL+3"));
+    connect(three, &QAction::triggered, this, &MyMainWindow::UpdateAgainstBot);
+    EditMenu->addAction(three);
+
 
     //Options menu
     EditMenu = menuBar()->addMenu(tr("&Options"));
@@ -1368,7 +1433,7 @@ int MyMainWindow::CheckIfEnd()
             msgBox.setWindowTitle("Tie game!");
             //msgBox.setText("Tie game!");
             draw = draw + 1;
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/Tic_Tac_Toe_QT/TTT_in_QT/Try5/tie.jpg"));
+            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/tie.jpg"));
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             msgBox.exec();
         }
@@ -1379,7 +1444,7 @@ int MyMainWindow::CheckIfEnd()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
             //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/Tic_Tac_Toe_QT/TTT_in_QT/Try5/X.jpg"));
+            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/X.jpg"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             //msgBox.resize(100,100);
@@ -1392,7 +1457,7 @@ int MyMainWindow::CheckIfEnd()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p2.name + '(' + p2.sign + ')');
             //QString text = "Winner is " + p2.name + '(' + p2.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/Tic_Tac_Toe_QT/TTT_in_QT/Try5/O.png"));
+            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/O.png"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{max-width: 500px;}");
             msgBox.exec();
@@ -1410,9 +1475,11 @@ int MyMainWindow::CheckIfEnd()
 void MyMainWindow::ResetGame2()
 {
     ResetGame();
+    SaveInFile();
     draw = 0;
     p1.win1v1 = 0;
     p2.win1v1 = 0;
+
 }
 
 //resetira matricu
@@ -1451,7 +1518,8 @@ void MyMainWindow::ResetGame()
 
     br = 1;
 
-    SaveInFile();
+
+
 }
 
 //Putem QMessageBoxa ispisuje rezultat
@@ -1514,7 +1582,7 @@ MyMainMenu::MyMainMenu()
     Label->move(205, 20);
     Label->resize(200, 205);
 
-    Label2 = new QLabel("<img src='C:/Users/vjera/OneDrive/Radna površina/Tic_Tac_Toe_QT/TTT_in_QT/Try5/TTT2.png' />");
+    Label2 = new QLabel("<img src='C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/TTT2.png' />");
     Label2->move(20,20);
 
     editLayout->addWidget(Label);
@@ -1552,7 +1620,7 @@ void MyMainWindow::VsBot()
 //ispisuje u file
 void SaveInFile()
 {
-    QString filename = "C:/Users/vjera/OneDrive/Radna površina/Tic_Tac_Toe_QT/TTT_in_QT/build-Try5-Desktop_Qt_6_2_2_MinGW_64_bit-Profile/Results.txt";
+    QString filename = "C:/Users/vjera/OneDrive/Dokumenti/Results.txt";
         QFile file(filename);
         if (file.open(QIODevice::ReadWrite |  QIODevice::Append)) {
             QTextStream stream(&file);
@@ -1567,7 +1635,7 @@ void ReadFromFile()
 {
     int a = 0, b = 0, c = 0;
     int suma = 0, sumb = 0, sumc = 0;
-    QString filename = "C:/Users/vjera/OneDrive/Radna površina/Tic_Tac_Toe_QT/TTT_in_QT/build-Try5-Desktop_Qt_6_2_2_MinGW_64_bit-Profile/Results.txt";
+    QString filename = "C:/Users/vjera/OneDrive/Dokumenti/Results.txt";
         QFile file(filename);
         if (file.open(QIODevice::ReadOnly))
         {
@@ -2005,159 +2073,3 @@ void Game5x5::BotMove5x5(int numOfMoves)
         b5.m[bestMove[0]][bestMove[1]] = AI.sign;
         handleButton(bestMove[0] * 5 + bestMove[1]);
 }
-
-
-/*
-//Prozor za igru Ultimate TTT
-UltimateTTT::UltimateTTT()
-{
-    setWindowTitle("Ultimate Tic Tac Toe");
-    MyLabel = new QLabel(this);
-    MyLabel->setText("Ultimate Tic Tac Toe:\nTo read info click 'info' button");
-    MyLabel->move(90,15);
-    setStyleSheet("background-color: rgb(255, 223, 128)");
-    int x = 30, y = 50;
-    for(int i = 0; i < 81; i++)
-    {
-        MyButton[i] = new QPushButton(this);
-        MyButton[i]->setText(QString::number(i + 1));
-        MyButton[i]->setStyleSheet("background-color: light gray");
-        MyButton[i]->setGeometry(x, y, 50, 50);
-        if(x < 480)
-        {
-            x += 50;
-        }
-        else
-        {
-            x = 30;
-            y += 50;
-        }
-    }
-    connect(MyButton[0], &QPushButton::clicked, this, [this]{ handleButton(0); });
-    connect(MyButton[1], &QPushButton::clicked, this, [this]{ handleButton(1); });
-    connect(MyButton[2], &QPushButton::clicked, this, [this]{ handleButton(2); });
-    connect(MyButton[3], &QPushButton::clicked, this, [this]{ handleButton(3); });
-    connect(MyButton[4], &QPushButton::clicked, this, [this]{ handleButton(4); });
-    connect(MyButton[5], &QPushButton::clicked, this, [this]{ handleButton(5); });
-    connect(MyButton[6], &QPushButton::clicked, this, [this]{ handleButton(6); });
-    connect(MyButton[7], &QPushButton::clicked, this, [this]{ handleButton(7); });
-    connect(MyButton[8], &QPushButton::clicked, this, [this]{ handleButton(8); });
-    connect(MyButton[9], &QPushButton::clicked, this, [this]{ handleButton(9); });
-    connect(MyButton[10], &QPushButton::clicked, this, [this]{ handleButton(10); });
-    connect(MyButton[11], &QPushButton::clicked, this, [this]{ handleButton(11); });
-    connect(MyButton[12], &QPushButton::clicked, this, [this]{ handleButton(12); });
-    connect(MyButton[13], &QPushButton::clicked, this, [this]{ handleButton(13); });
-    connect(MyButton[14], &QPushButton::clicked, this, [this]{ handleButton(14); });
-    connect(MyButton[15], &QPushButton::clicked, this, [this]{ handleButton(15); });
-    connect(MyButton[16], &QPushButton::clicked, this, [this]{ handleButton(16); });
-    connect(MyButton[17], &QPushButton::clicked, this, [this]{ handleButton(17); });
-    connect(MyButton[18], &QPushButton::clicked, this, [this]{ handleButton(18); });
-    connect(MyButton[19], &QPushButton::clicked, this, [this]{ handleButton(19); });
-    connect(MyButton[20], &QPushButton::clicked, this, [this]{ handleButton(20); });
-    connect(MyButton[21], &QPushButton::clicked, this, [this]{ handleButton(21); });
-    connect(MyButton[22], &QPushButton::clicked, this, [this]{ handleButton(22); });
-    connect(MyButton[23], &QPushButton::clicked, this, [this]{ handleButton(23); });
-    connect(MyButton[24], &QPushButton::clicked, this, [this]{ handleButton(24); });
-    connect(MyButton[25], &QPushButton::clicked, this, [this]{ handleButton(25); });
-    connect(MyButton[26], &QPushButton::clicked, this, [this]{ handleButton(26); });
-    connect(MyButton[27], &QPushButton::clicked, this, [this]{ handleButton(27); });
-    connect(MyButton[28], &QPushButton::clicked, this, [this]{ handleButton(28); });
-    connect(MyButton[29], &QPushButton::clicked, this, [this]{ handleButton(29); });
-    connect(MyButton[30], &QPushButton::clicked, this, [this]{ handleButton(30); });
-    connect(MyButton[31], &QPushButton::clicked, this, [this]{ handleButton(31); });
-    connect(MyButton[32], &QPushButton::clicked, this, [this]{ handleButton(32); });
-    connect(MyButton[33], &QPushButton::clicked, this, [this]{ handleButton(33); });
-    connect(MyButton[34], &QPushButton::clicked, this, [this]{ handleButton(34); });
-    connect(MyButton[35], &QPushButton::clicked, this, [this]{ handleButton(35); });
-    connect(MyButton[36], &QPushButton::clicked, this, [this]{ handleButton(36); });
-    connect(MyButton[37], &QPushButton::clicked, this, [this]{ handleButton(37); });
-    connect(MyButton[38], &QPushButton::clicked, this, [this]{ handleButton(38); });
-    connect(MyButton[39], &QPushButton::clicked, this, [this]{ handleButton(39); });
-    connect(MyButton[40], &QPushButton::clicked, this, [this]{ handleButton(40); });
-    connect(MyButton[41], &QPushButton::clicked, this, [this]{ handleButton(41); });
-    connect(MyButton[42], &QPushButton::clicked, this, [this]{ handleButton(42); });
-    connect(MyButton[43], &QPushButton::clicked, this, [this]{ handleButton(43); });
-    connect(MyButton[44], &QPushButton::clicked, this, [this]{ handleButton(44); });
-    connect(MyButton[45], &QPushButton::clicked, this, [this]{ handleButton(45); });
-    connect(MyButton[46], &QPushButton::clicked, this, [this]{ handleButton(46); });
-    connect(MyButton[47], &QPushButton::clicked, this, [this]{ handleButton(47); });
-    connect(MyButton[48], &QPushButton::clicked, this, [this]{ handleButton(48); });
-    connect(MyButton[49], &QPushButton::clicked, this, [this]{ handleButton(49); });
-    connect(MyButton[50], &QPushButton::clicked, this, [this]{ handleButton(15); });
-    connect(MyButton[51], &QPushButton::clicked, this, [this]{ handleButton(16); });
-    connect(MyButton[52], &QPushButton::clicked, this, [this]{ handleButton(17); });
-    connect(MyButton[53], &QPushButton::clicked, this, [this]{ handleButton(18); });
-    connect(MyButton[54], &QPushButton::clicked, this, [this]{ handleButton(19); });
-    connect(MyButton[55], &QPushButton::clicked, this, [this]{ handleButton(20); });
-    connect(MyButton[56], &QPushButton::clicked, this, [this]{ handleButton(21); });
-    connect(MyButton[57], &QPushButton::clicked, this, [this]{ handleButton(22); });
-    connect(MyButton[58], &QPushButton::clicked, this, [this]{ handleButton(23); });
-    connect(MyButton[59], &QPushButton::clicked, this, [this]{ handleButton(24); });
-    connect(MyButton[60], &QPushButton::clicked, this, [this]{ handleButton(25); });
-    connect(MyButton[61], &QPushButton::clicked, this, [this]{ handleButton(26); });
-    connect(MyButton[62], &QPushButton::clicked, this, [this]{ handleButton(27); });
-    connect(MyButton[63], &QPushButton::clicked, this, [this]{ handleButton(28); });
-    connect(MyButton[64], &QPushButton::clicked, this, [this]{ handleButton(29); });
-    connect(MyButton[65], &QPushButton::clicked, this, [this]{ handleButton(30); });
-    connect(MyButton[66], &QPushButton::clicked, this, [this]{ handleButton(31); });
-    connect(MyButton[67], &QPushButton::clicked, this, [this]{ handleButton(32); });
-    connect(MyButton[68], &QPushButton::clicked, this, [this]{ handleButton(33); });
-    connect(MyButton[69], &QPushButton::clicked, this, [this]{ handleButton(34); });
-    connect(MyButton[70], &QPushButton::clicked, this, [this]{ handleButton(35); });
-    connect(MyButton[71], &QPushButton::clicked, this, [this]{ handleButton(36); });
-    connect(MyButton[72], &QPushButton::clicked, this, [this]{ handleButton(37); });
-    connect(MyButton[73], &QPushButton::clicked, this, [this]{ handleButton(38); });
-    connect(MyButton[74], &QPushButton::clicked, this, [this]{ handleButton(39); });
-    connect(MyButton[75], &QPushButton::clicked, this, [this]{ handleButton(40); });
-    connect(MyButton[76], &QPushButton::clicked, this, [this]{ handleButton(41); });
-    connect(MyButton[77], &QPushButton::clicked, this, [this]{ handleButton(42); });
-    connect(MyButton[78], &QPushButton::clicked, this, [this]{ handleButton(43); });
-    connect(MyButton[79], &QPushButton::clicked, this, [this]{ handleButton(44); });
-    connect(MyButton[80], &QPushButton::clicked, this, [this]{ handleButton(45); });
-    connect(MyButton[81], &QPushButton::clicked, this, [this]{ handleButton(46); });
-}
-//zapocinje igru Ultimate TTT
-void StartUltimateGame()
-{
-    UltimateTTT WindowU;
-    WindowU.resize(500,500);
-    WindowU.show();
-    WindowU.exec();
-}
-void UltimateTTT::handleButton(int i)
-{
-    int a = 0, b = 0;
-    a = i / 5;
-    b = i % 5;
-    if(flag5x5[i] == 0)
-    {
-        if(br == 1)
-        {
-             buttons[i]
-             buttons[i]->setStyleSheet(text1);
-             b5.MakeAMove(a,b, 'x');
-             br = 2;
-        }
-        else
-        {
-            MyButton[i]->setText("O");
-            MyButton[i]->setStyleSheet(text2);
-            b5.MakeAMove(a,b, 'o');
-            br = 1;
-        }
-        flag5x5[i] = 1;
-    }
-    CheckIfEndUltimate();
-}
-int UltimateTTT::CheckIfEndUltimate()
-{
-}
-char GameEnd();
-*/
-
-
-
-
-
-
-

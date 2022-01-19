@@ -127,10 +127,13 @@ class UltimateTTT : public QDialog
 {
 public:
     void m();
+    void re();
     bigBoard matrix;
     QPushButton* MyButton[81];
     UltimateTTT();
     QLabel* MyLabel;
+    QLabel* NextMove;
+    QLabel* next;
     void handleButton(int i);
     int CheckIfEndUltimate();
     void ResetGameU();
