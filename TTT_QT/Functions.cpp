@@ -1,18 +1,19 @@
 #include "Functions.h"
 using namespace std;
 
+
 //GLOBAL VARIABLES
 
 int draw = 0;                      //broj neodlucenih ishoda
-int br = 1;
+int br = 1;                        // ima vrijednost 1 ili 2, ovisno o tome igra li sljedeci potez igrac 1 ili igrac 2
 int AgainstBot = 0;                //ako je ukljucen vsBot mode -> AgainstBot = 1
 int rb = 0;                        //pamti korisnikov izbor kod biranja boja buttona
-int numberOfMoves = 0;   //broj poteza
+int numberOfMoves = 0;              //broj poteza kod 5x5, koristi se kod bota
 
-int bbn = 0;          //big board number
-int numofmoves = 0;
+int bbn = 0;                     //big board number
+int numofmoves = 0;              //Za ultimate TTT
 
-bigBoard matrix;
+bigBoard matrix;                   //matrica za ultimate
 board b;                           // matrica za 3x3
 board5x5 b5;                       // matrica za 5x5
 bot AI('x', 0);                    // bot
@@ -27,6 +28,9 @@ int num = 1;                        // prilikom biranja boja buttona, pamti mije
 QString text1 = "background-color: rgb(255, 155, 0); color: rgb(255, 255, 255)";      //narancasta boja za 'X' igraca
 QString text2 = "background-color: rgb(0, 140, 0); color: rgb(255, 255, 255)";        //zelena boja za 'O' igraca
 QString text3 = "background-color: rgb(255, 255, 255); color: rgb(255, 255, 255)";        //tie boja za ultimate TTT
+
+//-------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------
 
 //CLASS FUNCTIONS
 
@@ -166,7 +170,7 @@ void bot::Move(int* i, int* j)
         *j = bestMove[1];
 }
 
-//boardNxN class functions
+//board5x5 class functions
 board5x5::board5x5()
 {
     for(int i = 0;i < 5; i++)
@@ -175,7 +179,6 @@ board5x5::board5x5()
             m[i][j] = ' ';
         }
 }
-
 char board5x5::GameEnd()
 {
     int a = 0, b = 0;
@@ -275,6 +278,7 @@ bool board5x5::operator==(board5x5 temp)
 
 //Ultimate TTT
 
+//small board class functions
 smallBoard::smallBoard()
 {
     int i = 0, j = 0;
@@ -284,8 +288,6 @@ smallBoard::smallBoard()
 
     flag = '0';
 }
-
-
 char smallBoard::GameEnd()
 {
     int a = 0, b = 0;
@@ -346,9 +348,7 @@ char smallBoard::GameEnd()
     }
 }
 
-
 //Big board class functions
-
 bigBoard::bigBoard()
 {
     for (int i = 0; i < 9; i++)
@@ -356,7 +356,6 @@ bigBoard::bigBoard()
         boards[i].GameEnd();
     }
 }
-
 char bigBoard::GameEnd()
 {
     for(int i = 0; i < 9; i++)
@@ -402,17 +401,17 @@ char bigBoard::GameEnd()
     return '0';
 }
 
-
+//UltimateTTT class functions
 void UltimateTTT::re()
 {
     ResetGameU();
     reject();
 }
-
 //Prozor za igru Ultimate TTT
 UltimateTTT::UltimateTTT()
 {
     setWindowTitle("Ultimate Tic Tac Toe");
+    setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
 
     QLabel* NextMove = new QLabel(this);
     NextMove->setText("Next move(index of small matrix in big matrix): ");
@@ -575,28 +574,6 @@ UltimateTTT::UltimateTTT()
 
         connect(MyButton[80], &QPushButton::clicked, this, [this]{ handleButton(80); });
 }
-
-
-void mfun()
-{
-    QMessageBox msg;
-
-    msg.setText("To win you have to connect three small matrixes. Position of a move in a small matrix determines in which small matrix the nest move can be played.");
-    msg.exec();
-}
-
-//zapocinje igru Ultimate TTT
-void StartUltimateGame()
-{
-    UltimateTTT WindowU;
-    WindowU.resize(750,600);
-    WindowU.show();
-    WindowU.exec();
-
-    WindowU.ResetGameU();
-}
-
-
 void UltimateTTT::handleButton(int i)
 {
     if(numofmoves == 0)
@@ -750,8 +727,6 @@ int UltimateTTT::CheckIfEndUltimate()
 
     }
 }
-
-
 void UltimateTTT::ResetGameU()
 {
 
@@ -769,7 +744,6 @@ void UltimateTTT::ResetGameU()
 
         br = 1;
 }
-
 
 //-------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------
@@ -1011,6 +985,27 @@ int DefendInTwo(char sign, board5x5 b, int& n, int& m)
     return 0;
 }
 
+//info for ultimate TTT
+void mfun()
+{
+    QMessageBox msg;
+
+    msg.setText("To win you have to connect three small matrixes. Position of a move in a small matrix determines in which small matrix the nest move can be played.");
+    msg.exec();
+}
+
+//zapocinje igru Ultimate TTT
+void MyMainWindow::StartUltimateGame()
+{
+    ResetGame2();
+    UltimateTTT WindowU;
+    WindowU.resize(750,600);
+    WindowU.show();
+    WindowU.exec();
+
+    WindowU.ResetGameU();
+}
+
 
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------------------------------------
@@ -1053,7 +1048,7 @@ MyMainWindow::MyMainWindow()
     //extra mode
     Ultimate = new QAction(tr("Ultimate"), this);
     Ultimate->setShortcut(tr("CTRL+U"));
-    connect(Ultimate, &QAction::triggered, this, &StartUltimateGame);
+    connect(Ultimate, &QAction::triggered, this, &MyMainWindow::StartUltimateGame);
     EditMenu->addAction(Ultimate);
 
 
@@ -1431,10 +1426,10 @@ int MyMainWindow::CheckIfEnd()
         {
             QMessageBox msgBox;
             msgBox.setWindowTitle("Tie game!");
-            //msgBox.setText("Tie game!");
+            //msgBox.setText(qApp->applicationDirPath());
             draw = draw + 1;
+
             msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/tie.jpg"));
-            //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             msgBox.exec();
         }
 
@@ -1445,9 +1440,6 @@ int MyMainWindow::CheckIfEnd()
             msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
             //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
             msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/X.jpg"));
-            //msgBox.setText(text);
-            //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
-            //msgBox.resize(100,100);
             msgBox.exec();
         }
 
@@ -1962,7 +1954,7 @@ int Game5x5::CheckIfEnd5()
             msgBox.setWindowTitle("Tie game!");
             //msgBox.setText("Tie game!");
             draw = draw + 1;
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/Tic_Tac_Toe_QT/TTT_in_QT/Try5/tie.jpg"));
+            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/tie.jpg"));
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             msgBox.exec();
         }
@@ -1973,7 +1965,7 @@ int Game5x5::CheckIfEnd5()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
             //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/Tic_Tac_Toe_QT/TTT_in_QT/Try5/X.jpg"));
+            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/X.jpg"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             //msgBox.resize(100,100);
@@ -1986,7 +1978,7 @@ int Game5x5::CheckIfEnd5()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p2.name + '(' + p2.sign + ')');
             //QString text = "Winner is " + p2.name + '(' + p2.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/Tic_Tac_Toe_QT/TTT_in_QT/Try5/O.png"));
+            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/O.png"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{max-width: 500px;}");
             msgBox.exec();

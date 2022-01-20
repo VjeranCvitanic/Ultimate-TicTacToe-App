@@ -25,4 +25,3 @@ int main(int argc, char **argv)
 
 //Buttoni mijenjaju boju kad prodes preko njih / dizajn buttona
 //Mijenjanje igraca koji ima pocetni potez //najizvedivije je kod bota
-//7x7 / ultimate TTT

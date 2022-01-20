@@ -35,8 +35,10 @@
 
 using namespace std;
 
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
-
+//CLASSES
 
 //board 3x3 class
 class board
@@ -67,6 +69,7 @@ public:
 
 };
 
+//small matrix for ultimate TTT
 class smallBoard
 {
 public:
@@ -80,6 +83,7 @@ public:
     char GameEnd();
 };
 
+//big matrix for ultimate TTT
 class bigBoard
 {
 public:
@@ -140,26 +144,7 @@ public:
 };
 
 
-void StartUltimateGame();
-void ResetGameU();
-void mfun();
-
-//The minimax algorithm
-int minimax(board btemp, bool isMax, char sign);
-int minimax5x5(board5x5 b, bool isMax, char sign, int alpha, int beta, int depth, int numberOfMoves);
-
-//return x if given o and vice versa
-char otherSign(char sign);
-
-
-int WinInOne(char sign, board5x5 b, int& n, int& m);
-int DefendInOne(char sign, board5x5 b, int& n, int& m);
-
-int WinInTwo(char sign, board5x5 b, int& n, int& m);
-int DefendInTwo(char sign, board5x5 b, int& n, int& m);
-
-//-------------------------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------------------------
+//Pocetni izbornik
 class MyMainMenu : public QDialog
 {
 public:
@@ -178,7 +163,7 @@ public:
     MyMainMenu();
 };
 
-
+//dijalog za unos imena igraca
 class MyDialog : public QDialog
 {
 public:
@@ -192,10 +177,7 @@ public:
     QDialogButtonBox* buttonBox;
 };
 
-
-void Dialog();
-
-
+//Glavni prozot
 class MyMainWindow : public QMainWindow
 {
 public:
@@ -241,9 +223,10 @@ void VsBot();
 void BotMove();
 void UpdateAgainstBot();
 void Start5x5Game();
+void StartUltimateGame();
 };
 
-
+//Moji botuni
 class MyButtons : public QPushButton
 {
 public:
@@ -251,7 +234,7 @@ public:
     MyButtons();
 };
 
-
+//5x5 TTT
 class Game5x5 : public QDialog
 {
 public:
@@ -267,8 +250,7 @@ public:
     void BotMove5x5(int numberOfMoves);
 };
 
-
-
+//dijalog za mijenjanje boja botuna
 class ChangeButtonColor : public QDialog
 {
 public:
@@ -289,21 +271,46 @@ public:
   friend void Change();
 };
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 
+//OTHER FUNCTIONS
+
+//upis/ispis iz filea
 void SaveInFile();
-
 void ReadFromFile();
 
+//pomocne funkcije za promjenu boje botuna
 void Update1();
 void Update2();
 void Update3();
 void Update4();
 void Update5();
 
+//prihvaca unos iz dijaloga za unos imena
+void Dialog();
 
+//bot turn off
 void UpdateAgainstBot();
 
+//resetira ultimate TTT game
+void ResetGameU();
 
-void StartUltimateGame();
+//info for ultimate TTT
+void mfun();
+
+//The minimax algorithm
+int minimax(board btemp, bool isMax, char sign);
+int minimax5x5(board5x5 b, bool isMax, char sign, int alpha, int beta, int depth, int numberOfMoves);
+
+//return x if given o and vice versa
+char otherSign(char sign);
+
+//Pomocne funkcije za 5x5 bota
+int WinInOne(char sign, board5x5 b, int& n, int& m);
+int DefendInOne(char sign, board5x5 b, int& n, int& m);
+
+int WinInTwo(char sign, board5x5 b, int& n, int& m);
+int DefendInTwo(char sign, board5x5 b, int& n, int& m);
 
 #endif
