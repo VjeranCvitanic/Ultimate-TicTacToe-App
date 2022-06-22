@@ -9,7 +9,8 @@ Game of Tic-Tac-Toe,
 
 5x5 board
 
-![gif_5x5](https://user-images.githubusercontent.com/92399175/174995259-aca3ab7a-bef3-4909-8d77-f96cdd2df6d7.gif)
+![5x5_2](https://user-images.githubusercontent.com/92399175/174996434-86d54071-3ae0-44cc-9502-cdb2b2b3d9bd.gif)
+
 
 
 includes bot(minmax algorithm)
