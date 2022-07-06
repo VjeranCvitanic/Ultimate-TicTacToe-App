@@ -1998,6 +1998,12 @@ void Game5x5::ResetGame5()
     board5x5 temp;
     b5 = temp;
 
+
+    /*for(int i = 0; i < 5; i++)
+        for(int j = 0; j < 5; j++)
+            b5.m[i][j] = ' ';
+       */
+
     for(int i = 0; i < 25; i++)
     {
         MyButton[i]->setText(QString::number(i + 1));
@@ -2013,55 +2019,54 @@ void Game5x5::ResetGame5()
 void Game5x5::BotMove5x5(int numOfMoves)
 {
     int depth = 0;
-        int i = 0, j = 0;
-        int bestMove[2] = { 0 };
-        board5x5 btemp = b5;
-        int score = 0;
-        int bestScore = -5;
-        srand(time(NULL));
+    int i = 0, j = 0;
+    int bestMove[2] = { 0 };
+    board5x5 btemp = b5;
+    int score = 0;
+    int bestScore = -5;
+    srand(time(NULL));
 
-        if (numOfMoves <= 2)
+    if (numOfMoves <= 2)
+    {
+        while (true)
         {
-            while (true)
-            {
 
-                int a = rand() % 2 + 1;
-                int r = rand() % 2 + 1;
-                if (b.m[a][r] == ' ')
+            int a = rand() % 2 + 1;
+            int r = rand() % 2 + 1;
+            if (b.m[a][r] == ' ')
+            {
+                bestMove[0] = a;
+                bestMove[1] = r;
+                break;
+            }
+
+        }
+     }
+
+    else if (WinInOne(AI.sign, b5, i, j)) { bestMove[0] = i; bestMove[1] = j; }
+    else if (DefendInOne(AI.sign, b5, i, j)) { bestMove[0] = i; bestMove[1] = j; }
+    else if (WinInTwo(AI.sign, b5, i, j)) { bestMove[0] = i; bestMove[1] = j; }
+    else if (DefendInTwo(AI.sign, b5, i, j)) { bestMove[0] = i; bestMove[1] = j; }
+
+
+    else
+        for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++)
+                if (btemp.m[i][j] == ' ')
                 {
-                    bestMove[0] = a;
-                    bestMove[1] = r;
-                    break;
+                    int alpha = -5, beta = 5;
+                    btemp.m[i][j] = AI.sign;
+                    score = minimax5x5(btemp, false, AI.sign, alpha, beta, depth, numOfMoves);
+                    btemp.m[i][j] = ' ';
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestMove[0] = i;
+                        bestMove[1] = j;
+                    }
                 }
 
-            }
-        }
+    b5.m[bestMove[0]][bestMove[1]] = AI.sign;
+    handleButton(bestMove[0] * 5 + bestMove[1]);
 
-
-
-        if (WinInOne(AI.sign, b5, i, j)) { bestMove[0] = i; bestMove[1] = j; }
-        else if (DefendInOne(AI.sign, b5, i, j)) { bestMove[0] = i; bestMove[1] = j; }
-        else if (WinInTwo(AI.sign, b5, i, j)) { bestMove[0] = i; bestMove[1] = j; }
-        else if (DefendInTwo(AI.sign, b5, i, j)) { bestMove[0] = i; bestMove[1] = j; }
-
-
-        else
-            for (int i = 0; i < 5; i++)
-                for (int j = 0; j < 5; j++)
-                    if (btemp.m[i][j] == ' ')
-                    {
-                        int alpha = -5, beta = 5;
-                        btemp.m[i][j] = AI.sign;
-                        score = minimax5x5(btemp, false, AI.sign, alpha, beta, depth, numOfMoves);
-                        btemp.m[i][j] = ' ';
-                        if (score > bestScore)
-                        {
-                            bestScore = score;
-                            bestMove[0] = i;
-                            bestMove[1] = j;
-                        }
-                    }
-
-        b5.m[bestMove[0]][bestMove[1]] = AI.sign;
-        handleButton(bestMove[0] * 5 + bestMove[1]);
 }
