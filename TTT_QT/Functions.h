@@ -19,6 +19,9 @@
 #include <QFile>
 #include <QRadioButton>
 #include <QPixmap>
+#include <QStack>
+#include <QFont>
+
 
 #include <iostream>
 #include <random>
@@ -30,6 +33,8 @@
 #include <unistd.h>
 #include <random>
 #include <tuple>
+#include <stdlib.h>
+#include <QRect>
 
 #define MAX_NUM 9
 
@@ -141,6 +146,51 @@ public:
     void handleButton(int i);
     int CheckIfEndUltimate();
     void ResetGameU();
+    QRect* rect;
+};
+
+//Babushka mode
+class BabushkaTTT : public QDialog
+{
+    // 1->little orange
+    // 2->medium orange
+    // 3->big orange
+
+    // -1->little blue
+    // -2->medium blue
+    // -3->big blue
+
+public:
+    int character_size;
+    board b;
+    QLabel* MyLabel;
+    QLabel* labelO1;
+    QLabel* labelO2;
+    QLabel* labelO3;
+    QLabel* labelB1;
+    QLabel* labelB2;
+    QLabel* labelB3;
+    BabushkaTTT();
+    int OrangeRemaining[3];
+    int BlueRemaining[3];
+    QStack<int> stack[9];
+    void re();
+    void info();
+    QPushButton* MyButton[9];
+    QPushButton* Big;
+    QPushButton* Medium;
+    QPushButton* Little;
+    QPushButton* Remove_character;
+    void handleButton(int i);
+    void UpdateCharacterSize(int m);
+    int CheckIfEndBabushka();
+    int flag_array[9];
+    void ResetGameB();
+    void UpdateRemaining(int br);
+    void Remove_character_function();
+    bool remove;
+    bool cant_pick_size;
+    void SetButton(int i, int peek);
 };
 
 
@@ -192,6 +242,7 @@ QAction* Names;
 QAction* ReadFile;
 QAction* ChangeButtonColors;
 QAction* Ultimate;
+QAction* Babushka;
 QLabel* MyLabel;
 
 QPushButton* MyButton1;
@@ -224,15 +275,11 @@ void BotMove();
 void UpdateAgainstBot();
 void Start5x5Game();
 void StartUltimateGame();
+void StartBabushkaGame();
 };
 
 //Moji botuni
-class MyButtons : public QPushButton
-{
-public:
-    int num;
-    MyButtons();
-};
+//...
 
 //5x5 TTT
 class Game5x5 : public QDialog

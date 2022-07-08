@@ -1,5 +1,12 @@
 #include "Functions.h"
+#include <QDebug>
 using namespace std;
+
+
+//----------------------------------------------------------------------------------
+//CTRL + ALT GR + U za collapsat sve funkcije
+//----------------------------------------------------------------------------------
+
 
 
 //GLOBAL VARIABLES
@@ -318,8 +325,6 @@ char smallBoard::GameEnd()
         b = b + 1;
     }
 
-    b = 0;
-
     if (m[0][0] == m[1][1] and m[0][0] == m[2][2] and m[1][1] != ' ')
     {
         flag = m[1][1];
@@ -452,8 +457,6 @@ UltimateTTT::UltimateTTT()
 
             for(int i = 0; i < 3; i++)
             {
-                x = 50;
-                y = 50;
                 for(int j = 0; j < 3; j++)
                 {
                     x = 50*(j + 1) + incrementx;
@@ -632,7 +635,7 @@ void UltimateTTT::handleButton(int i)
 
     while(matrix.boards[bbn].flag != '0')
     {
-        if(bbn!=8)
+        if(bbn != 8)
         bbn = bbn + 1;
         else bbn = 0;
 
@@ -640,6 +643,9 @@ void UltimateTTT::handleButton(int i)
 
 
     next->setText(QString::number(bbn + 1));
+
+    //nacrtaj okvir oko bbn matrice
+
 
 }
 int UltimateTTT::CheckIfEndUltimate()
@@ -682,7 +688,7 @@ int UltimateTTT::CheckIfEndUltimate()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
             //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/X.jpg"));
+            msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/X.jpg"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             //msgBox.resize(100,100);
@@ -699,7 +705,7 @@ int UltimateTTT::CheckIfEndUltimate()
             msgBox.setWindowTitle("Tie game!");
             //msgBox.setText("Tie game!");
             draw = draw + 1;
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/tie.jpg"));
+            msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/tie.jpg"));
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             msgBox.exec();
             for(int i = 0; i < 81; i++)
@@ -714,7 +720,7 @@ int UltimateTTT::CheckIfEndUltimate()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p2.name + '(' + p2.sign + ')');
             //QString text = "Winner is " + p2.name + '(' + p2.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/O.png"));
+            msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/O.png"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{max-width: 500px;}");
             msgBox.exec();
@@ -745,6 +751,518 @@ void UltimateTTT::ResetGameU()
         br = 1;
 }
 
+//-------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------
+
+//Babushka mode
+BabushkaTTT::BabushkaTTT()
+{
+    remove = false;
+    character_size = 0;
+    setWindowTitle("Babushka mode!");
+    setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
+
+    MyLabel = new QLabel(this);
+    MyLabel->setText("Babushka Mode:\nTo read info click 'info' button");
+    MyLabel->move(90,15);
+    setStyleSheet("background-color: rgb(135, 185, 234)");
+
+    QPushButton* oo = new QPushButton(this);
+
+    oo->setText("Info");
+    oo->setGeometry(600, 510, 100, 40);
+    oo->setStyleSheet("background-color: light gray");
+    connect(oo, &QPushButton::clicked, this, &BabushkaTTT::info);
+
+    QPushButton* exit = new QPushButton(this);
+
+    exit->setText("Exit");
+    exit->setGeometry(600, 550, 100, 40);
+    exit->setStyleSheet("background-color: light gray");
+    connect(exit, &QPushButton::clicked, this, &BabushkaTTT::re);
+
+    for(int i = 0; i < 3; i++)
+    {
+        OrangeRemaining[i] = 2;
+        BlueRemaining[i] = 2;
+    }
+
+
+    int x = 200, y = 150;
+    for(int i = 0; i < 9; i++)
+    {
+        MyButton[i] = new QPushButton(this);
+        MyButton[i]->setText(QString::number(i + 1));
+        MyButton[i]->setStyleSheet("background-color: light gray");
+
+        MyButton[i]->setGeometry(x, y, 100, 100);
+
+        if(x < 400)
+        {
+            x += 100;
+        }
+
+        else
+        {
+            x = 200;
+            y += 100;
+        }
+
+        flag_array[i] = 0;
+    }
+
+
+    Big = new QPushButton(this);
+
+    QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigOrange.png");
+    QIcon ButtonIcon(pixmap);
+    Big->setIcon(ButtonIcon);
+    Big->setIconSize(QSize(905, 905));
+    Big->setGeometry(60, 150, 90, 90);
+
+    Medium = new QPushButton(this);
+    QPixmap pixmap2("../TTT_QT_NEW/TTT_QT/MediumOrange.png");
+    QIcon ButtonIcon2(pixmap2);
+    Medium->setIcon(ButtonIcon2);
+    Medium->setIconSize(QSize(865, 805));
+    Medium->setGeometry(60, 254, 90, 90);
+
+    Little = new QPushButton(this);
+    QPixmap pixmap3("../TTT_QT_NEW/TTT_QT/MediumOrange.png");
+    QIcon ButtonIcon3(pixmap3);
+    Little->setIcon(ButtonIcon3);
+    Little->setIconSize(QSize(365, 305));
+    Little->setGeometry(60, 359, 90, 90);
+
+    Remove_character = new QPushButton(this);
+    Remove_character->setText("Remove character");
+    Remove_character->setGeometry(58, 100, 120, 40);
+    Remove_character->setStyleSheet("background-color: light gray");
+    connect(Remove_character, &QPushButton::clicked, this, &BabushkaTTT::Remove_character_function);
+
+
+    labelO1 = new QLabel(this);
+    labelO1->setText(QString::number(OrangeRemaining[2]));
+    labelO1->move(40,180);
+    labelO1->setStyleSheet("QLabel { background-color : orange; color : white; }");
+
+    labelO2 = new QLabel(this);
+    labelO2->setText(QString::number(OrangeRemaining[1]));
+    labelO2->move(40,284);
+    labelO2->setStyleSheet("QLabel { background-color : orange; color : white; }");
+    labelO3 = new QLabel(this);
+    labelO3->setText(QString::number(OrangeRemaining[0]));
+    labelO3->move(40,389);
+    labelO3->setStyleSheet("QLabel { background-color : orange; color : white; }");
+
+    labelB1 = new QLabel(this);
+    labelB1->setText(QString::number(BlueRemaining[2]));
+    labelB1->move(170,180);
+    labelB1->setStyleSheet("QLabel { background-color : blue; color : white; }");
+    labelB2 = new QLabel(this);
+    labelB2->setText(QString::number(BlueRemaining[1]));
+    labelB2->move(170,284);
+    labelB2->setStyleSheet("QLabel { background-color : blue; color : white; }");
+    labelB3 = new QLabel(this);
+    labelB3->setText(QString::number(BlueRemaining[0]));
+    labelB3->move(170,389);
+    labelB3->setStyleSheet("QLabel { background-color : blue; color : white; }");
+
+    connect(Big, &QPushButton::clicked, this, [this]{UpdateCharacterSize(3);});
+    connect(Medium, &QPushButton::clicked, this, [this]{UpdateCharacterSize(2);});
+    connect(Little, &QPushButton::clicked, this, [this]{UpdateCharacterSize(1);});
+
+    connect(MyButton[0], &QPushButton::clicked, this, [this]{ handleButton(0); });
+    connect(MyButton[1], &QPushButton::clicked, this, [this]{ handleButton(1); });
+    connect(MyButton[2], &QPushButton::clicked, this, [this]{ handleButton(2); });
+    connect(MyButton[3], &QPushButton::clicked, this, [this]{ handleButton(3); });
+    connect(MyButton[4], &QPushButton::clicked, this, [this]{ handleButton(4); });
+    connect(MyButton[5], &QPushButton::clicked, this, [this]{ handleButton(5); });
+
+    connect(MyButton[6], &QPushButton::clicked, this, [this]{ handleButton(6); });
+    connect(MyButton[7], &QPushButton::clicked, this, [this]{ handleButton(7); });
+    connect(MyButton[8], &QPushButton::clicked, this, [this]{ handleButton(8); });
+
+}
+
+void BabushkaTTT::UpdateCharacterSize(int m)
+{
+    if(cant_pick_size == false)
+        character_size = m;
+
+    remove = false;
+}
+
+void BabushkaTTT::handleButton(int i)
+{
+    int a = 0, z = 0;
+    a = i / 3;
+    z = i % 3;
+
+    if(remove == false)
+    {
+
+        if(flag_array[i] * flag_array[i] < character_size * character_size)
+        {
+            cant_pick_size = false;
+            if(br == 1)
+            {
+                 //MyButton[i]->setText("X");
+
+                 //MyButton[i]->setStyleSheet(text1);
+
+                if(character_size == 3  and OrangeRemaining[2] > 0)
+                {
+                    //UpdateRemaining(flag_array[i]);
+
+                    QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigOrange.png");
+                    QIcon ButtonIcon(pixmap);
+                    MyButton[i]->setIcon(ButtonIcon);
+                    MyButton[i]->setIconSize(QSize(1005, 1005));
+                    OrangeRemaining[2]--;
+                    labelO1->setText(QString::number(OrangeRemaining[2]));
+                    b.MakeAMove(a,z, 'x');
+                    br = 2;
+                    flag_array[i] = character_size;
+                }
+
+                else if(character_size == 2 and OrangeRemaining[1] > 0)
+                {
+                    //UpdateRemaining(flag_array[i]);
+
+                    QPixmap pixmap("../TTT_QT_NEW/TTT_QT/MediumOrange.png");
+                    QIcon ButtonIcon(pixmap);
+                    MyButton[i]->setIcon(ButtonIcon);
+                    MyButton[i]->setIconSize(QSize(865, 805));
+                    OrangeRemaining[1]--;
+                    labelO2->setText(QString::number(OrangeRemaining[1]));
+                    b.MakeAMove(a,z, 'x');
+                    br = 2;
+                    flag_array[i] = character_size;
+                }
+
+                else if(character_size == 1 and OrangeRemaining[0] > 0)
+                {
+                    //UpdateRemaining(flag_array[i]);
+
+                    QPixmap pixmap("../TTT_QT_NEW/TTT_QT/MediumOrange.png");
+                    QIcon ButtonIcon(pixmap);
+                    MyButton[i]->setIcon(ButtonIcon);
+                    MyButton[i]->setIconSize(QSize(365, 305));
+                    OrangeRemaining[0]--;
+                    labelO3->setText(QString::number(OrangeRemaining[0]));
+                    b.MakeAMove(a,z, 'x');
+                    br = 2;
+                    flag_array[i] = character_size;
+                }
+
+                stack[i].push(character_size);
+                cant_pick_size = false;
+            }
+
+            else
+            {
+                //MyButton[i]->setText("O");
+                //MyButton[i]->setStyleSheet(text2);
+
+                if(character_size == 3 and BlueRemaining[2] > 0)
+                {
+                    //UpdateRemaining(flag_array[i]);
+
+                    QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigBlue.png");
+                    QIcon ButtonIcon(pixmap);
+                    MyButton[i]->setIcon(ButtonIcon);
+                    MyButton[i]->setIconSize(QSize(1005, 1005));
+                    BlueRemaining[2]--;
+                    labelB1->setText(QString::number(BlueRemaining[2]));
+                    b.MakeAMove(a,z, 'o');
+                    br = 1;
+                    flag_array[i] = -1 * character_size;
+                }
+
+                else if(character_size == 2 and BlueRemaining[1] > 0)
+                {
+                    //UpdateRemaining(flag_array[i]);
+
+                    QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigBlue.png");
+                    QIcon ButtonIcon(pixmap);
+                    MyButton[i]->setIcon(ButtonIcon);
+                    MyButton[i]->setIconSize(QSize(565, 505));
+                    BlueRemaining[1]--;
+                    labelB2->setText(QString::number(BlueRemaining[1]));
+                    b.MakeAMove(a,z, 'o');
+                    br = 1;
+                    flag_array[i] = -1 * character_size;
+                }
+
+                else if(character_size == 1 and BlueRemaining[0] > 0)
+                {
+                    //UpdateRemaining(flag_array[i]);
+
+                    QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigBlue.png");
+                    QIcon ButtonIcon(pixmap);
+                    MyButton[i]->setIcon(ButtonIcon);
+                    MyButton[i]->setIconSize(QSize(245, 245));
+                    BlueRemaining[0]--;
+                    labelB3->setText(QString::number(BlueRemaining[0]));
+                    b.MakeAMove(a,z, 'o');
+                    br = 1;
+                    flag_array[i] = -1 * character_size;
+                }
+
+                stack[i].push(-1 * character_size);
+                cant_pick_size = false;
+            }
+        }
+    }
+
+    else
+    {
+        if(!stack[i].isEmpty())
+        {
+            if((br == 1 and stack[i].top() > 0) || (br == 2 and stack[i].top() < 0))
+            {
+                int popped = stack[i].pop();
+                UpdateRemaining(popped);
+                if(popped > 0)
+                    character_size = popped;
+                else
+                    character_size = -1 * popped;
+                cant_pick_size = true;
+                if(!stack[i].isEmpty())
+                {
+                    int peek = stack[i].top();
+                    SetButton(i, peek);
+                }
+
+                else
+                {
+                    MyButton[i]->setIcon(QIcon());
+                    MyButton[i]->setText(QString::number(i + 1));
+                    MyButton[i]->setStyleSheet("background-color: light gray");
+                    b.MakeAMove(a, z, '0');
+                    flag_array[i] = 0;
+                }
+
+
+            }
+
+
+        }
+        remove = false;
+
+    }
+
+    if(cant_pick_size == false)
+    {
+        character_size = 0;
+        CheckIfEndBabushka();
+    }
+}
+
+void BabushkaTTT::UpdateRemaining(int br)
+{   
+    switch (br)
+    {
+     case -3:
+       BlueRemaining[2]++;
+       labelB1->setText(QString::number(BlueRemaining[2]));
+       break;
+    case -2:
+      BlueRemaining[1]++;
+      labelB2->setText(QString::number(BlueRemaining[1]));
+      break;
+    case -1:
+      BlueRemaining[0]++;
+      labelB3->setText(QString::number(BlueRemaining[0]));
+      break;
+    case 3:
+       OrangeRemaining[2]++;
+       labelO1->setText(QString::number(OrangeRemaining[2]));
+       break;
+    case 2:
+       OrangeRemaining[1]++;
+       labelO2->setText(QString::number(OrangeRemaining[1]));
+       break;
+    case 1:
+       OrangeRemaining[0]++;
+       labelO3->setText(QString::number(OrangeRemaining[0]));
+       break;
+
+    default:
+        break;
+    }
+}
+
+int BabushkaTTT::CheckIfEndBabushka()
+{
+    QMessageBox msg;
+
+    msg.setWindowTitle("Game end");
+
+    if(b.GameEnd() == 'x')
+    {
+       msg.setText("Winner is X");
+       msg.exec();
+       ResetGameB();
+    }
+    else if(b.GameEnd() == 'o')
+    {
+        msg.setText("Winner is O");
+        msg.exec();
+        ResetGameB();
+    }
+
+    return 0;
+}
+
+void BabushkaTTT::info()
+{
+
+    QMessageBox msg;
+
+    msg.setWindowTitle("Babushka game mode info");
+
+    msg.setText("To win you have to connect three. Each player has six figures, two of each size, bigger figures can eat smaller enemy or friendly figures. You are allowed to change positions of characters that have already been placed.");
+    msg.exec();
+}
+
+void BabushkaTTT::re()
+{
+    ResetGameB();
+    reject();
+}
+
+void BabushkaTTT::ResetGameB()
+{
+    board m;
+    b = m;
+
+    br = 1;
+
+    for(int i = 0; i < 3; i++)
+    {
+        BlueRemaining[i] = 2;
+        OrangeRemaining[i] = 2;
+    }
+
+    for(int i = 0; i < 9; i++)
+    {
+        flag_array[i] = 0;
+
+        MyButton[i]->setIcon(QIcon());
+        MyButton[i]->setText(QString::number(i + 1));
+        MyButton[i]->setStyleSheet("background-color: light gray");
+
+        //stack[i].empty();
+        while(!stack[i].isEmpty())
+            stack[i].pop();
+    }
+
+    labelO1->setText(QString::number(OrangeRemaining[2]));
+
+    labelO2->setText(QString::number(OrangeRemaining[1]));
+
+    labelO3->setText(QString::number(OrangeRemaining[0]));
+
+
+    labelB1->setText(QString::number(BlueRemaining[2]));
+
+    labelB2->setText(QString::number(BlueRemaining[1]));
+
+    labelB3->setText(QString::number(BlueRemaining[0]));
+}
+
+void BabushkaTTT::Remove_character_function()
+{
+    remove = true;
+}
+
+void BabushkaTTT::SetButton(int i, int peek)
+{
+    int a = 0, z = 0;
+    a = i / 3;
+    z = i % 3;
+
+    if(peek > 0)
+    {
+        b.MakeAMove(a,z, 'x');
+        flag_array[i] = character_size;
+    }
+    else
+    {
+        b.MakeAMove(a,z, 'o');
+        flag_array[i] = -1 * character_size;
+    }
+
+    switch(peek)
+    {
+        case 3:
+           { QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigOrange.png");
+            QIcon ButtonIcon(pixmap);
+            MyButton[i]->setIcon(ButtonIcon);
+            MyButton[i]->setIconSize(QSize(1005, 1005));
+            break;
+            }
+
+        case 2:
+            {
+            QPixmap pixmap("../TTT_QT_NEW/TTT_QT/MediumOrange.png");
+            QIcon ButtonIcon(pixmap);
+            MyButton[i]->setIcon(ButtonIcon);
+            MyButton[i]->setIconSize(QSize(865, 805));
+            break;
+             }
+        case 1:
+            {
+            QPixmap pixmap("../TTT_QT_NEW/TTT_QT/MediumOrange.png");
+            QIcon ButtonIcon(pixmap);
+            MyButton[i]->setIcon(ButtonIcon);
+            MyButton[i]->setIconSize(QSize(365, 305));
+            break;
+            }
+        case -3:
+            {
+            QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigBlue.png");
+            QIcon ButtonIcon(pixmap);
+            MyButton[i]->setIcon(ButtonIcon);
+            MyButton[i]->setIconSize(QSize(1005, 1005));
+            break;
+            }
+        case -2:
+            {
+            QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigBlue.png");
+            QIcon ButtonIcon(pixmap);
+            MyButton[i]->setIcon(ButtonIcon);
+            MyButton[i]->setIconSize(QSize(565, 505));
+            break;
+            }
+        case -1:
+            {
+            QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigBlue.png");
+            QIcon ButtonIcon(pixmap);
+            MyButton[i]->setIcon(ButtonIcon);
+            MyButton[i]->setIconSize(QSize(245, 245));
+            break;
+            }
+
+        default:
+    {
+            break;
+    }
+    }
+}
+
+void MyMainWindow::StartBabushkaGame()
+{
+    //ResetGame2();
+    BabushkaTTT WindowU;
+    WindowU.resize(750,600);
+    WindowU.show();
+    WindowU.exec();
+
+    WindowU.ResetGameB();
+}
 //-------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------
 
@@ -1045,12 +1563,16 @@ MyMainWindow::MyMainWindow()
     EditMenu->addAction(five);
 
 
-    //extra mode
+    //extra modes
     Ultimate = new QAction(tr("Ultimate"), this);
     Ultimate->setShortcut(tr("CTRL+U"));
     connect(Ultimate, &QAction::triggered, this, &MyMainWindow::StartUltimateGame);
     EditMenu->addAction(Ultimate);
 
+    Babushka = new QAction(tr("Babushka"), this);
+    Babushka->setShortcut(tr("CTRL+G"));
+    connect(Babushka, &QAction::triggered, this, &MyMainWindow::StartBabushkaGame);
+    EditMenu->addAction(Babushka);
 
     //Bot mode
 
@@ -1429,7 +1951,7 @@ int MyMainWindow::CheckIfEnd()
             //msgBox.setText(qApp->applicationDirPath());
             draw = draw + 1;
 
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/tie.jpg"));
+            msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/tie.jpg"));
             msgBox.exec();
         }
 
@@ -1439,7 +1961,7 @@ int MyMainWindow::CheckIfEnd()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
             //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/X.jpg"));
+            msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/X.jpg"));
             msgBox.exec();
         }
 
@@ -1449,7 +1971,7 @@ int MyMainWindow::CheckIfEnd()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p2.name + '(' + p2.sign + ')');
             //QString text = "Winner is " + p2.name + '(' + p2.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/O.png"));
+            msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/O.png"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{max-width: 500px;}");
             msgBox.exec();
@@ -1574,7 +2096,7 @@ MyMainMenu::MyMainMenu()
     Label->move(205, 20);
     Label->resize(200, 205);
 
-    Label2 = new QLabel("<img src='C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/TTT2.png' />");
+    Label2 = new QLabel("<img src='../TTT_QT_NEW/TTT_QT/TTT2.png' />");
     Label2->move(20,20);
 
     editLayout->addWidget(Label);
@@ -1922,12 +2444,6 @@ void Game5x5::handleButton(int i)
     }
 }
 
-//konstruktor za klasu MyButtons
-MyButtons::MyButtons()
-{
-    num = 0;
-    setText(" ");
-}
 
 //zapocinje igru na 5x5
 void MyMainWindow::Start5x5Game()
@@ -1954,7 +2470,7 @@ int Game5x5::CheckIfEnd5()
             msgBox.setWindowTitle("Tie game!");
             //msgBox.setText("Tie game!");
             draw = draw + 1;
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/tie.jpg"));
+            msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/tie.jpg"));
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             msgBox.exec();
         }
@@ -1965,7 +2481,7 @@ int Game5x5::CheckIfEnd5()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
             //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/X.jpg"));
+            msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/X.jpg"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             //msgBox.resize(100,100);
@@ -1978,7 +2494,7 @@ int Game5x5::CheckIfEnd5()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p2.name + '(' + p2.sign + ')');
             //QString text = "Winner is " + p2.name + '(' + p2.sign + ')';
-            msgBox.setIconPixmap(QPixmap("C:/Users/vjera/OneDrive/Radna površina/TTT_QT_NEW/TTT_QT/O.png"));
+            msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/O.png"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{max-width: 500px;}");
             msgBox.exec();
