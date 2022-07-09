@@ -23,4 +23,8 @@ Ultimate Tic-Tac-Toe mode
 ![ultimate2](https://user-images.githubusercontent.com/92399175/174995313-414064a6-66b2-4fe4-907d-affcd5751d02.gif)
 
 
+and Babushka mode(Gobblet Gobblers)
+
+![ezgif com-gif-maker (6)](https://user-images.githubusercontent.com/92399175/178077851-9152d5fb-dc72-4c8d-925c-87dbf5306858.gif)
+
 Created in QT
