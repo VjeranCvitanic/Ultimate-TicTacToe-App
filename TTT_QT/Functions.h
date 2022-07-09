@@ -191,6 +191,7 @@ public:
     bool remove;
     bool cant_pick_size;
     void SetButton(int i, int peek);
+    int forbidden_move;
 };
 
 

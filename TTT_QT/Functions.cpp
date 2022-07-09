@@ -757,6 +757,7 @@ void UltimateTTT::ResetGameU()
 //Babushka mode
 BabushkaTTT::BabushkaTTT()
 {
+    forbidden_move = -1;
     remove = false;
     character_size = 0;
     setWindowTitle("Babushka mode!");
@@ -902,7 +903,7 @@ void BabushkaTTT::handleButton(int i)
     if(remove == false)
     {
 
-        if(flag_array[i] * flag_array[i] < character_size * character_size)
+        if(flag_array[i] * flag_array[i] < character_size * character_size and forbidden_move != i)
         {
             cant_pick_size = false;
             if(br == 1)
@@ -1013,6 +1014,8 @@ void BabushkaTTT::handleButton(int i)
                 stack[i].push(-1 * character_size);
                 cant_pick_size = false;
             }
+
+            forbidden_move = -1;
         }
     }
 
@@ -1022,6 +1025,7 @@ void BabushkaTTT::handleButton(int i)
         {
             if((br == 1 and stack[i].top() > 0) || (br == 2 and stack[i].top() < 0))
             {
+                forbidden_move = i;
                 int popped = stack[i].pop();
                 UpdateRemaining(popped);
                 if(popped > 0)
@@ -1171,6 +1175,8 @@ void BabushkaTTT::ResetGameB()
     labelB2->setText(QString::number(BlueRemaining[1]));
 
     labelB3->setText(QString::number(BlueRemaining[0]));
+
+    forbidden_move = -1;
 }
 
 void BabushkaTTT::Remove_character_function()
