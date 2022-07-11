@@ -152,6 +152,7 @@ public:
 //Babushka mode
 class BabushkaTTT : public QDialog
 {
+    //flag_array ˇˇˇ
     // 1->little orange
     // 2->medium orange
     // 3->big orange
@@ -162,6 +163,7 @@ class BabushkaTTT : public QDialog
 
 public:
     int character_size;
+    //int bot_character_size;
     board b;
     QLabel* MyLabel;
     QLabel* labelO1;
@@ -185,6 +187,7 @@ public:
     void UpdateCharacterSize(int m);
     int CheckIfEndBabushka();
     int flag_array[9];
+    int temp_array[9];
     void ResetGameB();
     void UpdateRemaining(int br);
     void Remove_character_function();
@@ -192,6 +195,7 @@ public:
     bool cant_pick_size;
     void SetButton(int i, int peek);
     int forbidden_move;
+    //int BabushkaBot(bool isMax, char sign);
 };
 
 

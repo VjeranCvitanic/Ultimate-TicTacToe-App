@@ -688,7 +688,10 @@ int UltimateTTT::CheckIfEndUltimate()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
             //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
+
             msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/X.jpg"));
+
+
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             //msgBox.resize(100,100);
@@ -705,6 +708,7 @@ int UltimateTTT::CheckIfEndUltimate()
             msgBox.setWindowTitle("Tie game!");
             //msgBox.setText("Tie game!");
             draw = draw + 1;
+
             msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/tie.jpg"));
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             msgBox.exec();
@@ -718,8 +722,10 @@ int UltimateTTT::CheckIfEndUltimate()
         {
             p2.win1v1 = p2.win1v1 + 1;
             QMessageBox msgBox;
-            msgBox.setWindowTitle("Winner is " + p2.name + '(' + p2.sign + ')');
+            msgBox.setWindowTitle("Winner is " + p2.name + '(' +  p2.sign + ')');
             //QString text = "Winner is " + p2.name + '(' + p2.sign + ')';
+            //
+
             msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/O.png"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{max-width: 500px;}");
@@ -757,9 +763,11 @@ void UltimateTTT::ResetGameU()
 //Babushka mode
 BabushkaTTT::BabushkaTTT()
 {
+    cant_pick_size = false;
     forbidden_move = -1;
     remove = false;
     character_size = 0;
+    //bot_character_size = 0;
     setWindowTitle("Babushka mode!");
     setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
 
@@ -810,10 +818,12 @@ BabushkaTTT::BabushkaTTT()
         }
 
         flag_array[i] = 0;
+        //temp_array[i] = 0;
     }
 
 
     Big = new QPushButton(this);
+
 
     QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigOrange.png");
     QIcon ButtonIcon(pixmap);
@@ -829,6 +839,7 @@ BabushkaTTT::BabushkaTTT()
     Medium->setGeometry(60, 254, 90, 90);
 
     Little = new QPushButton(this);
+
     QPixmap pixmap3("../TTT_QT_NEW/TTT_QT/MediumOrange.png");
     QIcon ButtonIcon3(pixmap3);
     Little->setIcon(ButtonIcon3);
@@ -916,6 +927,7 @@ void BabushkaTTT::handleButton(int i)
                 {
                     //UpdateRemaining(flag_array[i]);
 
+
                     QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigOrange.png");
                     QIcon ButtonIcon(pixmap);
                     MyButton[i]->setIcon(ButtonIcon);
@@ -969,6 +981,7 @@ void BabushkaTTT::handleButton(int i)
                 if(character_size == 3 and BlueRemaining[2] > 0)
                 {
                     //UpdateRemaining(flag_array[i]);
+
 
                     QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigBlue.png");
                     QIcon ButtonIcon(pixmap);
@@ -1204,7 +1217,8 @@ void BabushkaTTT::SetButton(int i, int peek)
     switch(peek)
     {
         case 3:
-           { QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigOrange.png");
+           {
+            QPixmap pixmap("../TTT_QT_NEW/TTT_QT/BigOrange.png");
             QIcon ButtonIcon(pixmap);
             MyButton[i]->setIcon(ButtonIcon);
             MyButton[i]->setIconSize(QSize(1005, 1005));
@@ -1258,6 +1272,56 @@ void BabushkaTTT::SetButton(int i, int peek)
     }
     }
 }
+
+//int BabushkaTTT::BabushkaBot(bool isMax, char sign)
+/*
+ *{
+    int score = 0;
+    if (CheckIfEndBabushka() == sign)return 1;
+    else if (CheckIfEndBabushka() == 't')return 0;
+    else if (CheckIfEndBabushka() == otherSign(sign))return -1;
+
+    if (isMax)
+    {
+        int bestScore = -5;
+        for (int i = 0; i < 9; i++)
+            for(int j = 0; j < 3; j++)
+            {
+                bot_character_size = j;
+                if (temp_array[i] == ' ' || temp_array[i] * temp_array[i] < bot_character_size * bot_character_size)
+                {
+                    temp_array[i] = sign;
+                    score = minimaxBabushka(btemp, false, sign);
+                    temp_array[i] = 0;
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                    }
+                }
+            }
+
+        return bestScore;
+    }
+
+    else
+    {
+        int bestScore = 5;
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                if (btemp.m[i][j] == ' ')
+                {
+                    btemp.m[i][j] = otherSign(sign);
+                    score = minimax(btemp, true, sign);
+                    btemp.m[i][j] = ' ';
+                    if (score < bestScore)
+                    {
+                        bestScore = score;
+                    }
+                }
+        return bestScore;
+    }
+ */
+
 
 void MyMainWindow::StartBabushkaGame()
 {
@@ -1967,6 +2031,7 @@ int MyMainWindow::CheckIfEnd()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
             //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
+
             msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/X.jpg"));
             msgBox.exec();
         }
@@ -1977,6 +2042,7 @@ int MyMainWindow::CheckIfEnd()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p2.name + '(' + p2.sign + ')');
             //QString text = "Winner is " + p2.name + '(' + p2.sign + ')';
+
             msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/O.png"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{max-width: 500px;}");
@@ -2476,6 +2542,7 @@ int Game5x5::CheckIfEnd5()
             msgBox.setWindowTitle("Tie game!");
             //msgBox.setText("Tie game!");
             draw = draw + 1;
+
             msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/tie.jpg"));
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
             msgBox.exec();
@@ -2487,6 +2554,7 @@ int Game5x5::CheckIfEnd5()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p1.name + '(' + p1.sign + ')');
             //QString text = "Winner is " + p1.name + '(' + p1.sign + ')';
+
             msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/X.jpg"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{min-width: 700px;}");
@@ -2500,6 +2568,7 @@ int Game5x5::CheckIfEnd5()
             QMessageBox msgBox;
             msgBox.setWindowTitle("Winner is " + p2.name + '(' + p2.sign + ')');
             //QString text = "Winner is " + p2.name + '(' + p2.sign + ')';
+
             msgBox.setIconPixmap(QPixmap("../TTT_QT_NEW/TTT_QT/O.png"));
             //msgBox.setText(text);
             //msgBox.setStyleSheet("QLabel{max-width: 500px;}");
